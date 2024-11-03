@@ -1,5 +1,6 @@
 // DashboardCharts.jsx
 "use client";
+import { useDarkMode } from "@/context/DarkmodeContext";
 import React from "react";
 import {
   LineChart,
@@ -18,7 +19,9 @@ type Props = {
   darkMode: boolean;
 };
 
-const DashboardCharts = ({ darkMode }: Props) => {
+const DashboardCharts = () => {
+  const { darkMode } = useDarkMode();
+
   // Sample data for the line chart
   const patientTrendData = [
     { month: "Jan", patients: 850 },

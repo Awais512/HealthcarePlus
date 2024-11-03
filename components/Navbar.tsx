@@ -1,13 +1,10 @@
-// Navbar.jsx
 import React from "react";
 import { Bell, Search, Moon, Sun } from "lucide-react";
+import { useDarkMode } from "@/context/DarkmodeContext";
 
-type Props = {
-  darkMode: boolean;
-  toggleDarkMode: () => void;
-};
+const Navbar = () => {
+  const { darkMode, toggleDarkMode } = useDarkMode();
 
-const Navbar = ({ darkMode, toggleDarkMode }: Props) => {
   return (
     <nav className="fixed top-0 left-0 right-0 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 shadow-lg border-b border-white/20 dark:border-gray-700/30 px-6 py-4 z-20">
       <div className="flex items-center justify-between gap-4">
