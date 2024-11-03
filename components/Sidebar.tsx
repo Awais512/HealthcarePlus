@@ -32,7 +32,7 @@ const Sidebar = () => {
         <div className="space-y-2">
           {/* Dashboard Button - Active */}
           <Link
-            href="/doctors"
+            href="/"
             className="flex items-center space-x-3 w-full p-2 rounded-lg
             backdrop-blur-sm bg-blue-500/10 dark:bg-blue-500/20
             hover:bg-blue-500/20 dark:hover:bg-blue-500/30
