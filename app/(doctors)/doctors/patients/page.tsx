@@ -1,17 +1,28 @@
 "use client";
 import React, { useState } from "react";
-import { Calendar, Plus, Search, Filter } from "lucide-react";
+import {
+  Search,
+  Filter,
+  UserPlus,
+  Mail,
+  Phone,
+  MoreVertical,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Types
-type Appointment = {
+interface Patient {
   id: number;
-  patientName: string;
-  date: string;
-  time: string;
-  type: string;
-  status: "Confirmed" | "Pending" | "Completed";
-};
+  name: string;
+  email: string;
+  phone: string;
+  age: number;
+  gender: string;
+  lastVisit: string;
+  status: "Active" | "Inactive";
+}
 
 type ColumnDef<T> = {
   header: string;
@@ -19,6 +30,14 @@ type ColumnDef<T> = {
   cell?: (props: { row: T }) => React.ReactNode;
 };
 
+type StatsCardProps = {
+  title: string;
+  value: string;
+  change: string;
+  trend: "up" | "down";
+};
+
+// Generic Table Component
 interface TableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
@@ -75,57 +94,116 @@ function Table<T extends Record<string, any>>({
   );
 }
 
-const AppointmentsPage = () => {
+// Stats Card Component
+const StatsCard = ({ title, value, change, trend }: StatsCardProps) => (
+  <div className="bg-white dark:bg-gray-800/50 backdrop-blur-md p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+    <h3 className="text-gray-600 dark:text-gray-400 text-sm font-medium">
+      {title}
+    </h3>
+    <p className="text-2xl font-bold text-gray-800 dark:text-white mt-2">
+      {value}
+    </p>
+    <p
+      className={cn(
+        "text-sm mt-1 flex items-center gap-1",
+        trend === "up"
+          ? "text-green-600 dark:text-green-400"
+          : "text-red-600 dark:text-red-400"
+      )}
+    >
+      {trend === "up" ? "↑" : "↓"} {change} from last month
+    </p>
+  </div>
+);
+
+const PatientsPage = () => {
   // States
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Sample appointments data
-  const appointments: Appointment[] = [
+  // Sample data
+  const patients: Patient[] = [
     {
       id: 1,
-      patientName: "John Doe",
-      date: "2024-03-04",
-      time: "09:00 AM",
-      type: "Check-up",
-      status: "Confirmed",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+1 234-567-8900",
+      age: 35,
+      gender: "Male",
+      lastVisit: "2024-02-28",
+      status: "Active",
     },
     {
       id: 2,
-      patientName: "Jane Smith",
-      date: "2024-03-04",
-      time: "10:30 AM",
-      type: "Follow-up",
-      status: "Pending",
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      phone: "+1 234-567-8901",
+      age: 28,
+      gender: "Female",
+      lastVisit: "2024-03-01",
+      status: "Active",
     },
     {
       id: 3,
-      patientName: "Robert Johnson",
-      date: "2024-03-04",
-      time: "02:00 PM",
-      type: "Consultation",
-      status: "Completed",
+      name: "Robert Johnson",
+      email: "robert.j@example.com",
+      phone: "+1 234-567-8902",
+      age: 45,
+      gender: "Male",
+      lastVisit: "2024-02-15",
+      status: "Inactive",
     },
   ];
 
   // Table columns configuration
-  const columns: ColumnDef<Appointment>[] = [
+  const columns: ColumnDef<Patient>[] = [
     {
-      header: "Patient Name",
-      accessorKey: "patientName",
+      header: "Name",
+      accessorKey: "name",
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
+              {row.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </span>
+          </div>
+          <div className="text-gray-800 dark:text-gray-200 font-medium">
+            {row.name}
+          </div>
+        </div>
+      ),
     },
     {
-      header: "Date",
-      accessorKey: "date",
+      header: "Contact",
+      accessorKey: "email",
+      cell: ({ row }) => (
+        <div className="space-y-1">
+          <div className="flex items-center text-gray-600 dark:text-gray-400">
+            <Mail className="h-4 w-4 mr-2" />
+            {row.email}
+          </div>
+          <div className="flex items-center text-gray-600 dark:text-gray-400">
+            <Phone className="h-4 w-4 mr-2" />
+            {row.phone}
+          </div>
+        </div>
+      ),
     },
     {
-      header: "Time",
-      accessorKey: "time",
+      header: "Age",
+      accessorKey: "age",
     },
     {
-      header: "Type",
-      accessorKey: "type",
+      header: "Gender",
+      accessorKey: "gender",
+    },
+    {
+      header: "Last Visit",
+      accessorKey: "lastVisit",
     },
     {
       header: "Status",
@@ -134,11 +212,9 @@ const AppointmentsPage = () => {
         <span
           className={cn(
             "px-2 py-1 rounded-full text-sm",
-            row.status === "Confirmed"
+            row.status === "Active"
               ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
-              : row.status === "Pending"
-              ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200"
-              : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-200"
+              : "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-200"
           )}
         >
           {row.status}
@@ -149,30 +225,47 @@ const AppointmentsPage = () => {
       header: "Actions",
       accessorKey: "id",
       cell: () => (
-        <div className="flex space-x-2">
-          <button className="px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:underline">
-            Edit
-          </button>
-          <button className="px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:underline">
-            Cancel
-          </button>
-        </div>
+        <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
+          <MoreVertical className="h-5 w-5" />
+        </button>
       ),
     },
   ];
 
-  // Filter appointments based on search
-  const filteredAppointments = appointments.filter((appointment) =>
-    Object.values(appointment).some((value) =>
+  // Filter patients based on search
+  const filteredPatients = patients.filter((patient) =>
+    Object.values(patient).some((value) =>
       value.toString().toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 
   // Pagination logic
-  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredPatients.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentAppointments = filteredAppointments.slice(startIndex, endIndex);
+  const currentPatients = filteredPatients.slice(startIndex, endIndex);
+
+  // Stats data
+  const statsData = [
+    {
+      title: "Total Patients",
+      value: "1,234",
+      change: "12%",
+      trend: "up" as const,
+    },
+    {
+      title: "Active Patients",
+      value: "1,180",
+      change: "8%",
+      trend: "up" as const,
+    },
+    {
+      title: "New Patients",
+      value: "64",
+      change: "4%",
+      trend: "up" as const,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -180,16 +273,23 @@ const AppointmentsPage = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Appointments
+            Patients
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage and schedule patient appointments
+            View and manage patient records
           </p>
         </div>
         <button className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-          <Plus className="h-5 w-5" />
-          <span>New Appointment</span>
+          <UserPlus className="h-5 w-5" />
+          <span>Add Patient</span>
         </button>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {statsData.map((stat, index) => (
+          <StatsCard key={index} {...stat} />
+        ))}
       </div>
 
       {/* Search and Filter Section */}
@@ -198,7 +298,7 @@ const AppointmentsPage = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
           <input
             type="text"
-            placeholder="Search appointments..."
+            placeholder="Search patients by name, email, or phone..."
             className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 
             bg-white dark:bg-gray-800/50 backdrop-blur-md
             text-gray-800 dark:text-gray-200
@@ -216,38 +316,30 @@ const AppointmentsPage = () => {
           <Filter className="h-5 w-5" />
           <span>Filter</span>
         </button>
-        <button
-          className="flex items-center space-x-2 px-4 py-2 
-          border border-gray-200 dark:border-gray-700 rounded-lg 
-          bg-white dark:bg-gray-800/50 backdrop-blur-md
-          text-gray-700 dark:text-gray-300"
-        >
-          <Calendar className="h-5 w-5" />
-          <span>Date</span>
-        </button>
       </div>
 
       {/* Table */}
-      <Table data={currentAppointments} columns={columns} />
+      <Table data={currentPatients} columns={columns} />
 
       {/* Pagination */}
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Showing {startIndex + 1} to{" "}
-          {Math.min(endIndex, filteredAppointments.length)} of{" "}
-          {filteredAppointments.length} results
+          {Math.min(endIndex, filteredPatients.length)} of{" "}
+          {filteredPatients.length} results
         </p>
         <div className="flex space-x-2">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             className={cn(
-              "px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg",
+              "flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg",
               "bg-white dark:bg-gray-800/50 backdrop-blur-md",
               "text-gray-700 dark:text-gray-300",
               currentPage === 1 && "opacity-50 cursor-not-allowed"
             )}
           >
+            <ChevronLeft className="h-4 w-4 mr-1" />
             Previous
           </button>
           <button
@@ -256,13 +348,14 @@ const AppointmentsPage = () => {
             }
             disabled={currentPage === totalPages}
             className={cn(
-              "px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg",
+              "flex items-center px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg",
               "bg-white dark:bg-gray-800/50 backdrop-blur-md",
               "text-gray-700 dark:text-gray-300",
               currentPage === totalPages && "opacity-50 cursor-not-allowed"
             )}
           >
             Next
+            <ChevronRight className="h-4 w-4 ml-1" />
           </button>
         </div>
       </div>
@@ -270,4 +363,4 @@ const AppointmentsPage = () => {
   );
 };
 
-export default AppointmentsPage;
+export default PatientsPage;
