@@ -22,7 +22,7 @@ const RecentActivity = () => {
   ];
 
   return (
-    <div className="mt-8">
+    <>
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
         Recent Activity
       </h2>
@@ -67,7 +67,7 @@ const RecentActivity = () => {
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

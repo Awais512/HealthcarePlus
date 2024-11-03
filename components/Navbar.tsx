@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { Bell, Search, Moon, Sun } from "lucide-react";
 import { useDarkMode } from "@/context/DarkmodeContext";

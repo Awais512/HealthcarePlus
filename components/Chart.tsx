@@ -43,8 +43,7 @@ const DashboardCharts = () => {
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-      {/* Patient Trend Chart */}
+    <>
       <div className="backdrop-blur-md bg-white/50 dark:bg-gray-800/50 p-6 rounded-xl shadow-sm border border-white/20 dark:border-gray-700/30">
         <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
           Patient Growth Trend
@@ -125,7 +124,7 @@ const DashboardCharts = () => {
           </ResponsiveContainer>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
